@@ -24,6 +24,24 @@ describe Fastlane do
         end").runner.execute(:test)
         expect(ret).to eq(old_value)
       end
+
+      it "accepts true & false for boolean fields" do
+        get_bool_value_cmd = "get_info_plist_value(path: '#{plist_path}', key: 'BoolKey')"
+        set_bool_key_with_string = "set_info_plist_value(path: '#{plist_path}', key: 'BoolKey', value: 'NO')"
+        set_bool_key_with_literal = "set_info_plist_value(path: '#{plist_path}', key: 'BoolKey', value: true)"
+
+        expect{ run_command(set_bool_key_with_string) }.to_not raise_error
+        old_value = run_command(get_bool_value_cmd);
+        expect(old_value).to eq(false)
+
+        expect{ run_command(set_bool_key_with_literal) }.to_not raise_error
+      end
+
+      def run_command(command)
+        Fastlane::FastFile.new.parse("lane :test do
+          #{command}
+        end").runner.execute(:test)
+      end
     end
   end
 end
